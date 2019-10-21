@@ -774,7 +774,7 @@ Section
   }
   .open-left .main-left,
   .open-right .main-right {
-    overflow: auto;
+    overflow: hidden;
     height: auto;
   }
   .main-right {
