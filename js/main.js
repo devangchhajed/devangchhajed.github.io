@@ -1,245 +1,98 @@
+jQuery(function ($) {
+    //typewrite effect
+    var TxtType = function (el, toRotate, period) {
+        this.toRotate = toRotate;
+        this.el = el;
+        this.loopNum = 0;
+        this.period = parseInt(period, 10) || 2000;
+        this.txt = "";
+        this.tick();
+        this.isDeleting = false;
+    };
 
-(function() {
-    "use strict"; // Start of use strict
+    TxtType.prototype.tick = function () {
+        var i = this.loopNum % this.toRotate.length;
+        var fullTxt = this.toRotate[i];
 
-    /** Loader */
-    var loader = $('.loader');
-    var wHeight = $(window).height();
-    var wWidth = $(window).width();
-    var i = 0;
-    /*Center loader on half screen */
-    loader.css({
-        top: wHeight / 2 - 2.5,
-        left: wWidth / 2 - 200
-    })
-    do {
-        loader.animate({
-            width: i
-        }, 10)
-        i += 3;
-    } while (i <= 400)
-    if (i === 402) {
-        loader.animate({
-            left: 0,
-            width: '100%'
-        })
-        loader.animate({
-            top: '0',
-            height: '100vh'
-        })
-    }
-    /* This line hide loader and show content */
-    setTimeout(function() {
-        $('.loader-wrapper').fadeOut("fast");
-        (loader).fadeOut("fast");
-        /*Set time in milisec */
-    }, 3500);
-
-    /** Animation on scroll */
-    function elementInView() {
-        var $animatedElements = $(".anim");
-        var $window = $(window);
-
-        $window.on('scroll resize', function() {
-            var windowHeight = $window.height();
-            var windowTopPosition = $window.scrollTop();
-            var windowBottPosition = (windowTopPosition + windowHeight);
-
-            $.each($animatedElements, function() {
-                var $element = $(this);
-                var elementHeight = $element.outerHeight();
-                var elementTopPosition = $element.offset().top;
-                var elementBottPosition = (elementTopPosition + elementHeight);
-
-                // Check to see if this current container is within viewport
-                if ((elementBottPosition >= windowTopPosition) &&
-                    (elementTopPosition <= windowBottPosition)) {
-                    $element.addClass('animated');
-                    //$element.removeClass('anim');
-
-                    // Animate progress bar
-                    if ($element.hasClass('progress-bar')) {
-                        $element.css('width', $element.attr('data-percent') + '%');
-                    }
-
-                }
-                //else {
-                //$element.removeClass('animated');
-                //}
-            });
-        });
-
-        $window.trigger('scroll');
-
-    }
-
-    $(document).ready(function() {
-
-        /** Animation on scroll */
-        elementInView();
-
-        /** Set Full Height for Intro/ Section */
-        $('#intro').height(parseInt($(window).height()));
-
-        /** Background Image */
-        $('.bg-image').each(function() {
-            var $imgPath = $(this).attr("data-image");
-            $(this).css('background-image', 'url(' + $imgPath + ')');
-        });
-
-        if (matchMedia('(min-width: 1200px)').matches) {
-
-            /** Main Navigation Trigger */
-            $('.goto-right').on('click', function() {
-                $('body').toggleClass('open-right');
-            });
-
-            $('.goto-left').on('click', function() {
-                $('body').toggleClass('open-left');
-            });
-
-            $(window).scroll(function() {
-                if ($(window).scrollTop() <= 0) {
-                    $(document.body).removeClass('open-right');
-                    $(document.body).removeClass('open-left');
-                    $(document.body).addClass('open-back');
-                }
-            });
-
+        if (this.isDeleting) {
+            this.txt = fullTxt.substring(0, this.txt.length - 1);
+        } else {
+            this.txt = fullTxt.substring(0, this.txt.length + 1);
         }
 
-        /** Site Navigation LocalScroll */
-        $('.intro').localScroll({
-            target: 'body',
-            queue: true,
-            duration: 400,
-            hash: false,
-        });
+        this.el.innerHTML = '<span class="intro__cursor">' + this.txt + "</span>";
 
-        /** Responsive video embed */
-        $(".project-video").fitVids();
+        var that = this;
+        var delta = 200 - Math.random() * 100;
 
-        /** Typed.js (Text typing effect) */
-        $('.typed').typed({
-            stringsElement: $('.typed-strings'),
-            loop: true,
-            backDelay: 1000,
-            cursorChar: "_"
-        });
+        if (this.isDeleting) {
+            delta /= 2;
+        }
 
-        /** LightGallery init start */
-        $('#works-container').lightGallery({
-            showThumbByDefault: false,
-            hash: false
-        });
+        if (!this.isDeleting && this.txt === fullTxt) {
+            delta = this.period;
+            this.isDeleting = true;
+        } else if (this.isDeleting && this.txt === "") {
+            this.isDeleting = false;
+            this.loopNum++;
+            delta = 500;
+        }
 
-        /** Testimonial carousel */
-        $(".testimonial-carousel").owlCarousel({
-            autoplay: true,
-            autoplaySpeed: 1000,
-            autoplayTimeout: 5000,
-            autoplayHoverPause: true,
-            autoWidth: false,
-            autoHeight: false,
-            items: 1,
-            loop: true,
-            nav: false,
-            dots: false,
-            navText: false,
-            animateOut: 'fadeOut',
-        });
+        setTimeout(function () {
+            that.tick();
+        }, delta);
+    };
 
-        /** Client carousel */
-        $(".client-carousel").owlCarousel({
-            autoplay: true,
-            autoplaySpeed: 1000,
-            autoplayTimeout: 5000,
-            autoplayHoverPause: true,
-            autoWidth: false,
-            autoHeight: false,
-            items: 3,
-            margin: 30,
-            loop: true,
-            nav: false,
-            dots: false,
-            navText: false,
-            responsive: {
-                0: {
-                    items: 2
-                },
-                600: {
-                    items: 4
-                },
-                1000: {
-                    items: 3
-                },
-                1440: {
-                    items: 4
-                },
-                1600: {
-                    items: 5
-                },
-                2000: {
-                    items: 6
-                }
+    window.onload = function () {
+        var elements = document.getElementsByClassName("typewrite");
+        for (var i = 0; i < elements.length; i++) {
+            var toRotate = elements[i].getAttribute("data-type");
+            var period = elements[i].getAttribute("data-period");
+            if (toRotate) {
+                new TxtType(elements[i], JSON.parse(toRotate), period);
             }
-        });
+        }
+        // INJECT CSS
+        var css = document.createElement("style");
+        css.type = "text/css";
+        css.innerHTML = ".typewrite > .intro__cursor { border-right: 0.08em solid #007bff}";
+        document.body.appendChild(css);
+        // INJECT CSSs
+    };
+    //typewrite effect
 
-    });
+    // const hand = document.querySelector(".emoji.wave-hand");
 
-    //ISOTOPE
-    //ISOTOPE GLOBALS
-    var $container1 = $('.works-container');
+    // function waveOnLoad() {
+    //     hand.classList.add("wave");
+    //     setTimeout(function() {
+    //         hand.classList.remove("wave");
+    //     }, 2000);
+    // }
 
-    //ISOTOPE INIT
-    $(window).load(function() {
+    // setTimeout(function() {
+    //     waveOnLoad();
+    // }, 1000);
 
-        //checking if all images are loaded
-        $container1.imagesLoaded(function() {
+    // hand.addEventListener("mouseover", function() {
+    //     hand.classList.add("wave");
+    // });
 
-            //init isotope once all images are loaded
-            $container1.isotope({
-                // options
-                itemSelector: '.works-item',
-                layoutMode: 'masonry',
-                transitionDuration: '0.8s'
-            });
+    // hand.addEventListener("mouseout", function() {
+    //     hand.classList.remove("wave");
+    // });
 
-            //forcing a perfect masonry layout after initial load
-            setTimeout(function() {
-                $container1.isotope('layout');
-            }, 500);
+    // window.sr = ScrollReveal({
+    //     reset: false,
+    //     duration: 600,
+    //     easing: "cubic-bezier(.694,0,.335,1)",
+    //     scale: 1,
+    //     viewFactor: 0.3
+    // });
 
-            // triggering filtering
-            $('.works-filter li a').on('click', function() {
-                $('.works-filter li a').removeClass('active');
-                $(this).addClass('active');
-
-                var selector = $(this).attr('data-filter');
-                $('.works-container').isotope({
-                    filter: selector
-                });
-                setTimeout(function() {
-                    $container1.isotope('layout');
-                }, 700);
-                return false;
-            });
-
-            //Isotope ReLayout on Window Resize event.
-            $(window).on('resize', function() {
-                $container1.isotope('layout');
-                $('#intro').height(parseInt($(window).height()));
-            });
-
-            //Isotope ReLayout on device orientation changes
-            window.addEventListener("orientationchange", function() {
-                $container1.isotope('layout');
-            }, false);
-
-        });
-
-    });
-
-
-
-})();
+    // sr.reveal(".background");
+    // sr.reveal(".skills");
+    // sr.reveal(".experience", { viewFactor: 0.2 });
+    // sr.reveal(".featured-projects", { viewFactor: 0.1 });
+    // sr.reveal(".other-projects", { viewFactor: 0.05 });
+});
