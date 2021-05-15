@@ -379,18 +379,21 @@
             <div class="footer__copyright">
                 <div class="bottom">
                     <span>Devang Chhajed 👾</span>
-                    <span>2020</span>
+                    <span id="currYear">2020</span>
                 </div>
             </div>
             <div class="footer__links">
-                <a href="https://github.com/devangchhajed" target="_blank" title="github">
-                    <span class="text">github</span> <img src="./img/social/github.svg" alt="github" />
+                <a href="mailto:devang.chhajed@gmail.com" target="_blank" title="email">
+                    <span class="text">email</span> <img src="./img/social/email.svg" alt="email" />
                 </a>
                 <a href="https://www.linkedin.com/in/devangchhajed" target="_blank" title="linkedin">
                     <span class="text">linkedin</span> <img src="./img/social/linkedin.svg" alt="linkedin" />
                 </a>
-                <a href="mailto:devang.chhajed@gmail.com" target="_blank" title="email">
-                    <span class="text">email</span> <img src="./img/social/email.svg" alt="email" />
+                <a href="https://github.com/devangchhajed" target="_blank" title="github">
+                    <span class="text">github</span> <img src="./img/social/github.svg" alt="github" />
+                </a>
+                <a href="https://play.google.com/store/apps/dev?id=8097671400209721722" target="_blank" title="Google Play">
+                    <span class="text">Google Play</span> <img src="./img/social/google-play.svg" alt="email" />
                 </a>
             </div>
         </footer>
@@ -413,6 +416,11 @@
 
 		const darkmode = new Darkmode(options);
 		darkmode.showWidget();
+		
+		var d = new Date();
+		var n = d.getFullYear();
+		document.getElementById("currYear").innerHTML = n;
+		
 		
 	</script>
     <!-- <script src="./js/scrollreveal.min.js" type="text/javascript" charset="utf-8"></script> -->
